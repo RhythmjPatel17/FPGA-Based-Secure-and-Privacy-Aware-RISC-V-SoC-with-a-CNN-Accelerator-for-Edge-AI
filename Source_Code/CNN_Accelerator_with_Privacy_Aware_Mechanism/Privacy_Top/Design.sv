@@ -1,5 +1,5 @@
-module CNN_Privacy_Module(
 
+module CNN_Privacy_mechanism (
     input  logic        clk,
     input  logic        resetn,
 
@@ -17,9 +17,9 @@ module CNN_Privacy_Module(
     output logic        inference_done
 );
 
-    // === Internal Wires ===
+    // === Internal Signals ===
     logic [3:0] key_input;
-    logic       mode_select;
+    logic       mode_select;       // 0 = MNIST, 1 = CIFAR10
     logic [1:0] axi_master_id;
     logic       write_enable;
     logic [3:0] sig_input;
@@ -36,7 +36,16 @@ module CNN_Privacy_Module(
     logic       cnn_done;
     logic [3:0] class_after_noise;
 
-    // === AXI Register Interface ===
+    // Data memory interface
+    logic [5:0] layer_select;
+    logic [17:0] addr;
+    logic [7:0] data_out; // 8-bit weights from ROM
+
+    // Output from engines
+    logic [3:0] predicted_class_mnist, predicted_class_cifar;
+    logic done_mnist, done_cifar;
+
+    // === AXI Privacy Interface ===
     axi_lite_privacy u_axi_if (
         .clk(clk),
         .resetn(resetn),
@@ -60,7 +69,7 @@ module CNN_Privacy_Module(
         .secure_mode_active(secure_mode_active)
     );
 
-    // === FSM Security Logic ===
+    // === FSM Security ===
     secure_fsm_model u_fsm (
         .clk(clk),
         .resetn(resetn),
@@ -73,18 +82,54 @@ module CNN_Privacy_Module(
         .fsm_error(fsm_error)
     );
 
-    // === CNN Inference Engine ===
-    CIFAR_10_CNN_Accelerator_Engine u_cnn (
+    // === Shared Data Memory ===
+    data_memory u_data_mem (
         .clk(clk),
-        .resetn(resetn),
-        .start(cnn_start_cmd),
-        .pipeline(pipeline),
-        .predicted_class(predicted_class_raw),
-        .done(cnn_done),
-        .input_image_index(axi_wdata[20:16])
+        .mode(mode_select),        // 0 = MNIST, 1 = CIFAR
+        .layer_select(layer_select),
+        .addr(addr),
+        .data_out(data_out)
     );
 
-    // === Signature Verifier (4-bit) ===
+    // === CNN Engines ===
+    MNIST_CNN_Accelerator_Engine u_mnist (
+        .clk(clk),
+        .resetn(resetn),
+        .start(cnn_start_cmd & (mode_select == 1'b0)),
+        .pipeline(pipeline),
+        .predicted_digit(predicted_class_mnist),
+        .done(done_mnist),
+        .input_image_index(axi_wdata[20:16]),
+        .data_in(data_out),           // from data_memory
+        .addr(addr),                  // to data_memory
+        .layer_select(layer_select)   // to data_memory
+    );
+
+    CIFAR_10_CNN_Accelerator_Engine u_cifar (
+        .clk(clk),
+        .resetn(resetn),
+        .start(cnn_start_cmd & (mode_select == 1'b1)),
+        .pipeline(pipeline),
+        .predicted_class(predicted_class_cifar),
+        .done(done_cifar),
+        .input_image_index(axi_wdata[20:16]),
+        .data_in(data_out),           // from data_memory
+        .addr(addr),                  // to data_memory
+        .layer_select(layer_select)   // to data_memory
+    );
+
+    // === Mode-based Mux ===
+    always_comb begin
+        if (mode_select == 1'b0) begin
+            predicted_class_raw = predicted_class_mnist;
+            cnn_done            = done_mnist;
+        end else begin
+            predicted_class_raw = predicted_class_cifar;
+            cnn_done            = done_cifar;
+        end
+    end
+
+    // === Signature Verifier ===
     signature_verifier_4bit u_sig_verifier (
         .clk(clk),
         .resetn(resetn),
