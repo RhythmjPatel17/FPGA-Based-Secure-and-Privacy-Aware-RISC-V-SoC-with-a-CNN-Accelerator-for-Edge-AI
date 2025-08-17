@@ -25,7 +25,7 @@ module maxpool2d_2x2_stride2_3x_128ch (
     reg conv2d_start;
     wire conv2d_done; 
 
-    conv2d_8_8_64_batchnorm_relu6_1x_128ch_pes layer_1_to_20_output (
+    conv2d_8_8_64_batchnorm_relu6_1x_128ch layer_1_to_20_output (
         .clk(clk),
         .resetn(resetn),
         .start(conv2d_start),
