@@ -1,0 +1,13 @@
+On-Chip Component	MNIST Power (W)	CIFAR-10 Power (W)
+Clocks	0.004	0.004
+LUT as Logic	0.003	0.011
+F7/F8 Muxes	0.002	0.004
+LUT as Distributed RAM	0.001	0.001
+Register	0.001	0.001
+Block RAM	0.029	0.038
+DSPs	0.02	0.05
+I/O	0.001	0.001
+Others	0.007	0.017
+Static Power	0.107	0.114
+Dynamic Power	0.068	0.127
+Total On-Chip Power	0.175	0.241
