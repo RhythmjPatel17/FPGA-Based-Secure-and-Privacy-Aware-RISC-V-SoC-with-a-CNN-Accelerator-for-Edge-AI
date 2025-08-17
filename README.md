@@ -1,0 +1,1 @@
+# FPGA-Based-Secure-and-Privacy-Aware-RISC-V-SoC-with-a-CNN-Accelerator-for-Edge-AI
