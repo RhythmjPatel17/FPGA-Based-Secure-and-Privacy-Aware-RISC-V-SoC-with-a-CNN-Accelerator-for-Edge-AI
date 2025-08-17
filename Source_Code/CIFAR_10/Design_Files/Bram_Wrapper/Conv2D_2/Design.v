@@ -1,4 +1,4 @@
-module max_pool_2_bram_wrapper
+module second_order_conv_bram_wrapper
    (BRAM_PORTA_0_addr,
     BRAM_PORTA_0_clk,
     BRAM_PORTA_0_din,
@@ -37,7 +37,7 @@ module max_pool_2_bram_wrapper
   wire BRAM_PORTB_0_en;
   wire [3:0]BRAM_PORTB_0_we;
 
-  max_pool_2_bram max_pool_2_bram_i
+  second_order_conv_bram second_order_conv_bram_i
        (.BRAM_PORTA_0_addr(BRAM_PORTA_0_addr),
         .BRAM_PORTA_0_clk(BRAM_PORTA_0_clk),
         .BRAM_PORTA_0_din(BRAM_PORTA_0_din),
