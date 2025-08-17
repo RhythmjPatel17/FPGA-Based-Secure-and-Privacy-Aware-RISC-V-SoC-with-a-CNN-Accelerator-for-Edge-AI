@@ -57,11 +57,6 @@ module dense_layer_1x_2048_to_128_bn_relu6 (
     wire [17:0] weights_addr = out_idx * IN_DIM + chunk_idx * CHUNK_SIZE + in_idx;
 
     dense_weights_rom_block0 rom(.addr(weights_addr), .data(weights_data));
-    initial begin
-        $readmemh("iwb_files/layer_19_Dense/biases.mem", biases);
-        $readmemh("iwb_files/layer_20_BatchNormalization/weights.mem", scale);
-        $readmemh("iwb_files/layer_20_BatchNormalization/biases.mem", shift);
-    end
 
     always @(posedge clk) begin
         if (!resetn) begin
