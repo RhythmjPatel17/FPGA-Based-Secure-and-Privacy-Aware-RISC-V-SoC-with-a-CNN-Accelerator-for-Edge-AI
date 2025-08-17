@@ -38,14 +38,14 @@ module dense_layer_2x_128_to_10 (
     reg        dense_start;
     wire       dense_done;
 
-//    dense_layer_1x_2048_to_128_bn_relu6 layer_1_to_23_output (
-//        .clk(clk),
-//        .resetn(resetn),
-//        .start(dense_start),
-//        .read_addr(dense_read_addr),
-//        .read_data(dense_read_data),
-//        .done(dense_done)
-//    );
+   dense_layer_1x_2048_to_128_bn_relu6 layer_1_to_23_output (
+       .clk(clk),
+       .resetn(resetn),
+       .start(dense_start),
+       .read_addr(dense_read_addr),
+       .read_data(dense_read_data),
+       .done(dense_done)
+   );
 
     initial begin
         $readmemh("iwb_files/layer_22_Dense/weights.mem", weights);
