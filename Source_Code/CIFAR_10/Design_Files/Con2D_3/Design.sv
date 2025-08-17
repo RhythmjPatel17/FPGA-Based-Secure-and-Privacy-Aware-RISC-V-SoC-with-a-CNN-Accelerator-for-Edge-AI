@@ -1,4 +1,4 @@
-module conv2d_8_8_64_batchnorm_relu6_1x_128ch_pes (
+module conv2d_8_8_64_batchnorm_relu6_1x_128ch (
     input  wire        clk,
     input  wire        resetn,
     input  wire        start,
