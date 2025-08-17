@@ -47,11 +47,6 @@ module dense_layer_2x_128_to_10 (
        .done(dense_done)
    );
 
-    initial begin
-        $readmemh("iwb_files/layer_22_Dense/weights.mem", weights);
-        $readmemh("iwb_files/layer_22_Dense/biases.mem", biases);
-    end
-
     always @(posedge clk) begin
         if (!resetn) begin
             state <= IDLE;
